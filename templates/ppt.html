@@ -1,2 +1,125 @@
-{% extends "base.html" %}{% block title %}PPT maker{% endblock %}{% block heading %}Presentation maker{% endblock %}{% block content %}
-<div class="page-intro"><span class="eyebrow">CREATE PRESENTATIONS</span><h1>Turn your outline into slides</h1><p>Enter a topic and slide points. SkillSprint generates an editable PowerPoint file.</p></div><form method="post" class="form-card stack"><label>Presentation title<input name="title" placeholder="Cloud Computing and Modern Engineering" required></label><label>Topic / subtitle<input name="topic" placeholder="A practical overview"></label><label>Slide points <small class="muted">One point per line; each slide can contain up to five points.</small><textarea name="points" rows="9" placeholder="Introduction&#10;Key concepts&#10;Architecture&#10;Real-world applications&#10;Advantages and challenges&#10;Conclusion"></textarea></label><button class="btn primary">Generate PowerPoint →</button></form>{% if link %}<div class="success-card"><h3>Your presentation is ready</h3><p>Download and edit the .pptx file in PowerPoint or compatible software.</p><a class="btn primary" href="{{ link }}">↓ Download PPT</a></div>{% endif %}{% endblock %}
+
+{% extends "base.html" %}
+
+{% block title %}PPT Maker{% endblock %}
+{% block heading %}Presentation Maker{% endblock %}
+
+{% block content %}
+
+<div class="page-intro">
+    <span class="eyebrow">CREATE PRESENTATIONS</span>
+    <h1>Turn your ideas into PowerPoint slides</h1>
+    <p>
+        Enter your presentation details and generate an editable
+        PowerPoint presentation instantly.
+    </p>
+</div>
+
+<form method="POST"
+      action=""
+      class="form-card stack"
+      id="pptForm">
+
+    <label for="title">
+        Presentation Title
+        <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="Cloud Computing and Modern Engineering"
+            required>
+    </label>
+
+    <label for="topic">
+        Topic / Subtitle
+        <input
+            type="text"
+            id="topic"
+            name="topic"
+            placeholder="A practical overview of cloud computing">
+    </label>
+
+    <label for="points">
+        Slide Points
+        <small class="muted">
+            Enter one slide title per line. Each slide can contain
+            up to five points.
+        </small>
+
+        <textarea
+            id="points"
+            name="points"
+            rows="10"
+            placeholder="Introduction&#10;What is Cloud Computing?&#10;Cloud Architecture&#10;Real-world Applications&#10;Advantages and Challenges&#10;Conclusion"
+            required></textarea>
+    </label>
+
+    <div id="slideCount" class="muted">
+        Slides: 0
+    </div>
+
+    <button type="submit" class="btn primary" id="generateBtn">
+        Generate PowerPoint →
+    </button>
+
+</form>
+
+{% if error %}
+<div class="advice-card">
+    <h3>Unable to generate presentation</h3>
+    <p>{{ error }}</p>
+</div>
+{% endif %}
+
+{% if link %}
+<div class="success-card">
+    <h3>✓ Your presentation is ready!</h3>
+    <p>
+        Your PowerPoint file has been generated successfully.
+        Download and edit it in Microsoft PowerPoint.
+    </p>
+
+    <a class="btn primary"
+       href="{{ link }}"
+       download>
+        ↓ Download PowerPoint
+    </a>
+</div>
+{% endif %}
+
+<script>
+const pointsInput = document.getElementById("points");
+const slideCount = document.getElementById("slideCount");
+const pptForm = document.getElementById("pptForm");
+const generateBtn = document.getElementById("generateBtn");
+
+function updateSlideCount() {
+    const points = pointsInput.value
+        .split("\n")
+        .map(point => point.trim())
+        .filter(point => point.length > 0);
+
+    slideCount.textContent = "Slides: " + points.length;
+}
+
+pointsInput.addEventListener("input", updateSlideCount);
+
+pptForm.addEventListener("submit", function(event) {
+    const points = pointsInput.value
+        .split("\n")
+        .filter(point => point.trim().length > 0);
+
+    if (points.length === 0) {
+        event.preventDefault();
+        alert("Please enter at least one slide point.");
+        return;
+    }
+
+    generateBtn.disabled = true;
+    generateBtn.textContent = "Generating your PowerPoint...";
+});
+
+updateSlideCount();
+</script>
+
+{% endblock %}

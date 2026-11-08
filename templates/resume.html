@@ -1,3 +1,167 @@
-{% extends "base.html" %}{% block title %}ATS resume checker{% endblock %}{% block heading %}ATS resume checker{% endblock %}{% block content %}
-<div class="page-intro"><span class="eyebrow">RESUME REVIEW</span><h1>Make your resume easier to scan</h1><p>Upload a PDF, DOCX or TXT file to check common resume sections and keyword signals.</p></div><form method="post" enctype="multipart/form-data" class="upload-card"><div class="upload-icon">↑</div><h3>Upload your resume</h3><p class="muted">PDF, DOCX or TXT · Maximum 8 MB</p><input type="file" name="resume" accept=".pdf,.docx,.txt" required><button class="btn primary">Analyse resume →</button></form>
-{% if result %}<div class="result-card"><div class="score-ring"><strong>{{ result.score }}%</strong><small>Structure score</small></div><div><span class="eyebrow">ANALYSIS COMPLETE</span><h2>{{ result.filename }}</h2><p>{{ result.note }}</p></div></div><div class="check-grid">{% for label,ok in result.checks.items() %}<div class="check-item"><span>{{ '✓' if ok else '!' }}</span><div><b>{{ label }}</b><small>{{ 'Detected' if ok else 'Could not clearly detect' }}</small></div></div>{% endfor %}</div><div class="advice-card"><h3>What to improve</h3>{% if result.advice %}<ul>{% for a in result.advice %}<li>{{ a }}</li>{% endfor %}</ul>{% else %}<p>Your resume includes all basic sections checked. Next, tailor it to a specific job description.</p>{% endif %}</div>{% endif %}{% endblock %}
+
+{% extends "base.html" %}
+
+{% block title %}ATS Resume Checker{% endblock %}
+{% block heading %}ATS Resume Checker{% endblock %}
+
+{% block content %}
+
+<div class="page-intro">
+    <span class="eyebrow">RESUME REVIEW</span>
+    <h1>Check your resume ATS score</h1>
+    <p>
+        Upload your resume and get an ATS score, section analysis,
+        and personalized suggestions to improve your resume.
+    </p>
+</div>
+
+<form method="POST"
+      enctype="multipart/form-data"
+      class="upload-card">
+
+    <div class="upload-icon">↑</div>
+
+    <h3>Upload your resume</h3>
+
+    <p class="muted">PDF, DOCX or TXT · Maximum 8 MB</p>
+
+    <input
+        type="file"
+        name="resume"
+        accept=".pdf,.docx,.txt"
+        required
+    >
+
+    <button type="submit" class="btn primary">
+        Analyse My Resume →
+    </button>
+
+</form>
+
+{% if result %}
+
+<div class="result-card">
+
+    <div class="score-ring">
+        <strong>{{ result.score }}%</strong>
+        <small>ATS Score</small>
+    </div>
+
+    <div>
+        <span class="eyebrow">ANALYSIS COMPLETE</span>
+        <h2>{{ result.filename }}</h2>
+        <p>{{ result.note }}</p>
+
+        <h3>
+            {% if result.score >= 80 %}
+                Excellent Resume!
+            {% elif result.score >= 60 %}
+                Good Start! Needs Improvement
+            {% else %}
+                Your Resume Needs Improvement
+            {% endif %}
+        </h3>
+    </div>
+
+</div>
+
+<!-- ATS Score Progress -->
+
+<div class="advice-card">
+    <h3>ATS Score Overview</h3>
+
+    <div style="background:#e5e7eb;border-radius:20px;height:14px;">
+        <div style="
+            width:{{ result.score }}%;
+            background:#2563eb;
+            height:14px;
+            border-radius:20px;">
+        </div>
+    </div>
+
+    <p>{{ result.score }} out of 100</p>
+</div>
+
+<!-- Resume Section Analysis -->
+
+<div class="advice-card">
+    <h2>Resume Section Analysis</h2>
+
+    <div class="check-grid">
+
+        {% for label, ok in result.checks.items() %}
+
+        <div class="check-item">
+            <span>
+                {{ '✓' if ok else '!' }}
+            </span>
+
+            <div>
+                <b>{{ label }}</b>
+
+                <small>
+                    {{ 'Detected' if ok else 'Missing or unclear' }}
+                </small>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+</div>
+
+<!-- Improvement Instructions -->
+
+<div class="advice-card">
+
+    <span class="eyebrow">PERSONALIZED FEEDBACK</span>
+
+    <h2>What should you improve?</h2>
+
+    {% if result.advice %}
+
+    <ul class="improvement-list">
+
+        {% for a in result.advice %}
+
+        <li>
+            <span>💡</span>
+            {{ a }}
+        </li>
+
+        {% endfor %}
+
+    </ul>
+
+    {% else %}
+
+    <p>
+        Your resume includes all the basic sections checked.
+        Next, tailor it to the job description.
+    </p>
+
+    {% endif %}
+
+</div>
+
+<!-- ATS Tips -->
+
+<div class="advice-card">
+
+    <h2>Important ATS Improvement Tips</h2>
+
+    <ul>
+        <li>Use a simple, professional resume layout.</li>
+        <li>Add relevant technical skills from the job description.</li>
+        <li>Include measurable achievements in your projects.</li>
+        <li>Use clear headings such as Education, Skills and Projects.</li>
+        <li>Avoid unnecessary graphics, tables and multiple columns.</li>
+        <li>Check spelling and grammar.</li>
+        <li>Use standard fonts and readable formatting.</li>
+    </ul>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
